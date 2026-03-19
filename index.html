@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Умная Библиотека</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .controls {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin-bottom: 30px;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        .control-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        input[type="text"],
+        select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus,
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 5px rgba(102, 126, 234, 0.3);
+        }
+
+        .buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s, transform 0.1s;
+        }
+
+        button:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .secondary-btn {
+            background: #6c757d;
+        }
+
+        .secondary-btn:hover {
+            background: #5a6268;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid #eee;
+        }
+
+        .stat-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .books-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+            animation: fadeIn 0.5s ease-in 0.1s both;
+        }
+
+        .book-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .book-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .book-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .book-author {
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .book-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .book-genre {
+            background: #667eea;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            width: fit-content;
+        }
+
+        .book-year {
+            color: #999;
+        }
+
+        .book-rating {
+            color: #ffc107;
+            font-weight: bold;
+        }
+
+        .book-description {
+            color: #666;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin: 10px 0;
+            flex-grow: 1;
+        }
+
+        .book-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .book-actions button {
+            flex: 1;
+            padding: 8px;
+            font-size: 0.9rem;
+        }
+
+        .delete-btn {
+            background: #dc3545;
+        }
+
+        .delete-btn:hover {
+            background: #c82333;
+        }
+
+        .results-info {
+            color: white;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .no-results {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            text-align: center;
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .add-book-section {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin-bottom: 30px;
+        }
+
+        .add-book-section h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .books-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .control-group {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📚 Умная Библиотека</h1>
+            <p class="subtitle">Управление, поиск и фильтрация книг</p>
+        </header>
+
+        <!-- Секция добавления новой книги -->
+        <div class="add-book-section">
+            <h2>➕ Добавить новую книгу</h2>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="newTitle">Название</label>
+                    <input type="text" id="newTitle" placeholder="Название книги">
+                </div>
+                <div class="form-group">
+                    <label for="newAuthor">Автор</label>
+                    <input type="text" id="newAuthor" placeholder="Имя автора">
+                </div>
+                <div class="form-group">
+                    <label for="newGenre">Жанр</label>
+                    <input type="text" id="newGenre" placeholder="Жанр">
+                </div>
+                <div class="form-group">
+                    <label for="newYear">Год издания</label>
+                    <input type="text" id="newYear" placeholder="2024" max="2100">
+                </div>
+                <div class="form-group">
+                    <label for="newRating">Рейтинг</label>
+                    <input type="text" id="newRating" placeholder="4.5" max="5">
+                </div>
+                <div class="form-group">
+                    <label for="newDescription">Описание</label>
+                    <input type="text" id="newDescription" placeholder="Описание книги">
+                </div>
+            </div>
+            <button onclick="addNewBook()">Добавить книгу</button>
+        </div>
+
+        <!-- Контролы поиска и фильтрации -->
+        <div class="controls">
+            <div class="control-group">
+                <div>
+                    <label for="searchInput">🔍 Поиск по названию, автору или описанию</label>
+                    <input type="text" id="searchInput" placeholder="Введите запрос для поиска..." onkeyup="updateDisplay()">
+                </div>
+                <div>
+                    <label for="genreFilter">🎭 Фильтр по жанру</label>
+                    <select id="genreFilter" onchange="updateDisplay()">
+                        <option value="">Все жанры</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="ratingFilter">⭐ Минимальный рейтинг</label>
+                    <select id="ratingFilter" onchange="updateDisplay()">
+                        <option value="0">Все рейтинги</option>
+                        <option value="4">4.0+</option>
+                        <option value="4.5">4.5+</option>
+                        <option value="4.7">4.7+</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <div>
+                    <label for="sortBy">📊 Сортировка</label>
+                    <select id="sortBy" onchange="updateDisplay()">
+                        <option value="rating">По рейтингу (убывание)</option>
+                        <option value="title">По названию (А-Я)</option>
+                        <option value="year">По году (новые первыми)</option>
+                        <option value="author">По автору (А-Я)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="buttons">
+                <button onclick="displayAllBooks()">Показать все книги</button>
+                <button class="secondary-btn" onclick="clearFilters()">Очистить фильтры</button>
+            </div>
+
+            <!-- Статистика -->
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-value" id="totalBooks">0</div>
+                    <div class="stat-label">Всего книг</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="totalGenres">0</div>
+                    <div class="stat-label">Жанров</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="averageRating">0</div>
+                    <div class="stat-label">Средний рейтинг</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="resultsCount">0</div>
+                    <div class="stat-label">Результатов поиска</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Результаты поиска -->
+        <div id="resultsInfo" class="results-info"></div>
+        <div id="booksContainer" class="books-grid"></div>
+    </div>
+
+    <script>
+        // Класс SmartLibrary (реализация из TypeScript)
+        class SmartLibrary {
+            constructor() {
+                this.books = [];
+                this.bookId = 1;
+                this.initializeBooks();
+            }
+
+            initializeBooks() {
+                this.books = [
+                    {
+                        id: this.bookId++,
+                        title: "1984",
+                        author: "George Orwell",
+                        genre: "Dystopia",
+                        year: 1949,
+                        rating: 4.8,
+                        description: "A dystopian novel about a totalitarian state"
+                    },
+                    {
+                        id: this.bookId++,
+                        title: "To Kill a Mockingbird",
+                        author: "Harper Lee",
+                        genre: "Drama",
+                        year: 1960,
+                        rating: 4.9,
+                        description: "A gripping tale of racial injustice and childhood innocence"
+                    },
+                    {
+                        id: this.bookId++,
+                        title: "The Great Gatsby",
+                        author: "F. Scott Fitzgerald",
+                        genre: "Romance",
+                        year: 1925,
+                        rating: 4.7,
+                        description: "A classic American novel about love and ambition"
+                    },
+                    {
+                        id: this.bookId++,
+                        title: "Dune",
+                        author: "Frank Herbert",
+                        genre: "Science Fiction",
+                        year: 1965,
+                        rating: 4.8,
+                        description: "An epic space opera set on a desert planet"
+                    },
+                    {
+                        id: this.bookId++,
+                        title: "The Hobbit",
+                        author: "J.R.R. Tolkien",
+                        genre: "Fantasy",
+                        year: 1937,
+                        rating: 4.9,
+                        description: "A journey through a magical world"
+                    },
+                    {
+                        id: this.bookId++,
+                        title: "Murder on the Orient Express",
+                        author: "Agatha Christie",
+                        genre: "Mystery",
+                        year: 1934,
+                        rating: 4.7,
+                        description: "A classic detective mystery on a luxury train"
+                    },
+                    {
+                        id: this.bookId++,
+                        title: "The Catcher in the Rye",
+                        author: "J.D. Salinger",
+                        genre: "Drama",
+                        year: 1951,
+                        rating: 4.5,
+                        description: "A coming-of-age story of teenage angst"
+                    },
+                    {
+                        id: this.bookId++,
+                        title: "Foundation",
+                        author: "Isaac Asimov",
+                        genre: "Science Fiction",
+                        year: 1951,
+                        rating: 4.8,
+                        description: "A groundbreaking science fiction epic"
+                    }
+                ];
+            }
+
+            addBook(title, author, genre, year, rating, description) {
+                const newBook = {
+                    id: this.bookId++,
+                    title,
+                    author,
+                    genre,
+                    year,
+                    rating,
+                    description
+                };
+                this.books.push(newBook);
+                return newBook;
+            }
+
+            getAllBooks() {
+                return [...this.books];
+            }
+
+            filterByGenre(genre) {
+                return this.books.filter(book => book.genre.toLowerCase() === genre.toLowerCase());
+            }
+
+            filterByMinRating(minRating) {
+                return this.books.filter(book => book.rating >= minRating);
+            }
+
+            search(query) {
+                const lowerQuery = query.toLowerCase();
+                return this.books.filter(book =>
+                    book.title.toLowerCase().includes(lowerQuery) ||
+                    book.author.toLowerCase().includes(lowerQuery) ||
+                    book.description.toLowerCase().includes(lowerQuery)
+                );
+            }
+
+            getGenres() {
+                const genres = new Set(this.books.map(book => book.genre));
+                return Array.from(genres).sort();
+            }
+
+            sortByRating(descending = true) {
+                const sorted = [...this.books];
+                sorted.sort((a, b) => descending ? b.rating - a.rating : a.rating - b.rating);
+                return sorted;
+            }
+
+            sortByYear(descending = true) {
+                const sorted = [...this.books];
+                sorted.sort((a, b) => descending ? b.year - a.year : a.year - b.year);
+                return sorted;
+            }
+
+            sortByTitle(ascending = true) {
+                const sorted = [...this.books];
+                sorted.sort((a, b) => 
+                    ascending 
+                        ? a.title.localeCompare(b.title) 
+                        : b.title.localeCompare(a.title)
+                );
+                return sorted;
+            }
+
+            sortByAuthor(ascending = true) {
+                const sorted = [...this.books];
+                sorted.sort((a, b) => 
+                    ascending 
+                        ? a.author.localeCompare(b.author) 
+                        : b.author.localeCompare(a.author)
+                );
+                return sorted;
+            }
+
+            getBookById(id) {
+                return this.books.find(book => book.id === id);
+            }
+
+            removeBook(id) {
+                const index = this.books.findIndex(book => book.id === id);
+                if (index !== -1) {
+                    this.books.splice(index, 1);
+                    return true;
+                }
+                return false;
+            }
+
+            getStatistics() {
+                return {
+                    totalBooks: this.books.length,
+                    genres: this.getGenres(),
+                    averageRating: (this.books.reduce((sum, book) => sum + book.rating, 0) / this.books.length).toFixed(2),
+                };
+            }
+        }
+
+        // Инициализация библиотеки
+        const library = new SmartLibrary();
+
+        // Инициализация интерфейса
+        function initializeUI() {
+            populateGenreFilter();
+            updateStatistics();
+            displayAllBooks();
+        }
+
+        // Заполнение списка жанров
+        function populateGenreFilter() {
+            const genreFilter = document.getElementById('genreFilter');
+            const genres = library.getGenres();
+            genres.forEach(genre => {
+                const option = document.createElement('option');
+                option.value = genre;
+                option.textContent = genre;
+                genreFilter.appendChild(option);
+            });
+        }
+
+        // Обновление статистики
+        function updateStatistics() {
+            const stats = library.getStatistics();
+            document.getElementById('totalBooks').textContent = stats.totalBooks;
+            document.getElementById('totalGenres').textContent = stats.genres.length;
+            document.getElementById('averageRating').textContent = stats.averageRating;
+        }
+
+        // Отображение книг
+        function displayBooks(books) {
+            const container = document.getElementById('booksContainer');
+            const resultsInfo = document.getElementById('resultsInfo');
+            
+            document.getElementById('resultsCount').textContent = books.length;
+
+            if (books.length === 0) {
+                container.innerHTML = '<div class="no-results">📭 Книги не найдены</div>';
+                resultsInfo.textContent = '';
+                return;
+            }
+
+            resultsInfo.textContent = `✓ Найдено ${books.length} книг(и)`;
+            
+            container.innerHTML = books.map(book => `
+                <div class="book-card">
+                    <div class="book-title">${escapeHtml(book.title)}</div>
+                    <div class="book-author">✍️ ${escapeHtml(book.author)}</div>
+                    <div class="book-meta">
+                        <span class="book-genre">${escapeHtml(book.genre)}</span>
+                        <span class="book-year">${book.year}</span>
+                        <span class="book-rating">⭐ ${book.rating}</span>
+                    </div>
+                    <div class="book-description">${escapeHtml(book.description)}</div>
+                    <div class="book-actions">
+                        <button onclick="deleteBook(${book.id})" class="delete-btn">Удалить</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Функция для экранирования HTML
+        function escapeHtml(text) {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.replace(/[&<>"']/g, m => map[m]);
+        }
+
+        // Отображение всех книг
+        function displayAllBooks() {
+            const sortBy = document.getElementById('sortBy').value;
+            let books = library.getAllBooks();
+
+            switch(sortBy) {
+                case 'title':
+                    books = library.sortByTitle(true);
+                    break;
+                case 'author':
+                    books = library.sortByAuthor(true);
+                    break;
+                case 'year':
+                    books = library.sortByYear(true);
+                    break;
+                case 'rating':
+                default:
+                    books = library.sortByRating(true);
+            }
+
+            document.getElementById('searchInput').value = '';
+            document.getElementById('genreFilter').value = '';
+            document.getElementById('ratingFilter').value = '0';
+            displayBooks(books);
+        }
+
+        // Обновление отображения с фильтрами
+        function updateDisplay() {
+            const searchQuery = document.getElementById('searchInput').value;
+            const selectedGenre = document.getElementById('genreFilter').value;
+            const minRating = parseFloat(document.getElementById('ratingFilter').value) || 0;
+            const sortBy = document.getElementById('sortBy').value;
+
+            let books = library.getAllBooks();
+
+            // Применение фильтров
+            if (searchQuery) {
+                books = books.filter(book =>
+                    book.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    book.author.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    book.description.toLowerCase().includes(searchQuery.toLowerCase())
+                );
+            }
+
+            if (selectedGenre) {
+                books = books.filter(book => book.genre === selectedGenre);
+            }
+
+            if (minRating > 0) {
+                books = books.filter(book => book.rating >= minRating);
+            }
+
+            // Применение сортировки
+            switch(sortBy) {
+                case 'title':
+                    books = library.sortByTitle(true);
+                    break;
+                case 'author':
+                    books = library.sortByAuthor(true);
+                    break;
+                case 'year':
+                    books = library.sortByYear(true);
+                    break;
+                case 'rating':
+                default:
+                    books = library.sortByRating(true);
+            }
+
+            // Переприменение фильтров после сортировки
+            if (searchQuery) {
+                books = books.filter(book =>
+                    book.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    book.author.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    book.description.toLowerCase().includes(searchQuery.toLowerCase())
+                );
+            }
+
+            if (selectedGenre) {
+                books = books.filter(book => book.genre === selectedGenre);
+            }
+
+            if (minRating > 0) {
+                books = books.filter(book => book.rating >= minRating);
+            }
+
+            displayBooks(books);
+        }
+
+        // Добавление новой книги
+        function addNewBook() {
+            const title = document.getElementById('newTitle').value;
+            const author = document.getElementById('newAuthor').value;
+            const genre = document.getElementById('newGenre').value;
+            const year = parseInt(document.getElementById('newYear').value);
+            const rating = parseFloat(document.getElementById('newRating').value);
+            const description = document.getElementById('newDescription').value;
+
+            if (!title || !author || !genre || !year || !rating || !description) {
+                alert('Пожалуйста, заполните все поля');
+                return;
+            }
+
+            library.addBook(title, author, genre, year, rating, description);
+            
+            // Очистка формы
+            document.getElementById('newTitle').value = '';
+            document.getElementById('newAuthor').value = '';
+            document.getElementById('newGenre').value = '';
+            document.getElementById('newYear').value = '';
+            document.getElementById('newRating').value = '';
+            document.getElementById('newDescription').value = '';
+
+            // Обновление интерфейса
+            populateGenreFilter();
+            updateStatistics();
+            displayAllBooks();
+            alert('✓ Книга успешно добавлена!');
+        }
+
+        // Удаление книги
+        function deleteBook(id) {
+            if (confirm('Вы уверены, что хотите удалить эту книгу?')) {
+                library.removeBook(id);
+                updateStatistics();
+                updateDisplay();
+            }
+        }
+
+        // Очистка фильтров
+        function clearFilters() {
+            displayAllBooks();
+        }
+
+        // Инициализация при загрузке страницы
+        window.addEventListener('DOMContentLoaded', initializeUI);
+    </script>
+</body>
+</html>
