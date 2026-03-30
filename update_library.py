@@ -2,47 +2,62 @@ import os
 import json
 import re
 from ebooklib import epub
+from ebooklib import ITEM_IMAGE
+
+def extract_cover(book, book_filename):
+    """Достает обложку из epub и сохраняет в папку img/covers/"""
+    os.makedirs('img/covers', exist_ok=True)
+    cover_path = f"img/covers/{book_filename}.jpg"
+    
+    # Ищем изображения внутри epub
+    images = list(book.get_items_of_type(ITEM_IMAGE))
+    if images:
+        # Обычно первая картинка — это обложка
+        with open(cover_path, 'wb') as f:
+            f.write(images[0].get_content())
+        return cover_path
+    return "img/default-cover.jpg" # Если обложки нет
 
 def get_metadata(file_path):
-    # Значения по умолчанию
     title = os.path.basename(file_path).replace('.epub', '')
     author = "Unknown Author"
+    cover_url = "img/default-cover.jpg"
     
     try:
-        if file_path.endswith('.epub'):
-            book = epub.read_epub(file_path)
-            # Пытаемся достать реальное название из метаданных
-            t = book.get_metadata('DC', 'title')
-            if t: title = t[0][0]
-            
-            # Пытаемся достать автора
-            a = book.get_metadata('DC', 'creator')
-            if a: author = a[0][0]
-    except:
-        pass # Если файл битый, оставляем имя файла
+        book = epub.read_epub(file_path)
+        # Метаданные
+        t = book.get_metadata('DC', 'title')
+        if t: title = t[0][0]
+        a = book.get_metadata('DC', 'creator')
+        if a: author = a[0][0]
         
-    return title, author
+        # Извлечение обложки
+        cover_url = extract_cover(book, os.path.basename(file_path))
+    except:
+        pass
+        
+    return title, author, cover_url
 
 def main():
     books_dir = 'books'
     data_list = []
 
     if not os.path.exists(books_dir):
+        os.makedirs(books_dir)
         return
 
     for filename in os.listdir(books_dir):
         if filename.endswith('.epub'):
             full_path = os.path.join(books_dir, filename)
-            title, author = get_metadata(full_path)
+            title, author, cover = get_metadata(full_path)
             
             data_list.append({
                 "title": title,
                 "author": author,
                 "link": f"books/{filename}",
-                "image": "img/default-cover.jpg" # Пока ставим общую обложку
+                "image": cover
             })
 
-    # Сохраняем результат в папку js
     os.makedirs('js', exist_ok=True)
     with open('js/books_data.json', 'w', encoding='utf-8') as f:
         json.dump(data_list, f, ensure_ascii=False, indent=4)
