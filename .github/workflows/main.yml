@@ -1,0 +1,35 @@
+name: Auto Update Library
+
+on:
+  push:
+    branches:
+      - main  # или master, проверьте название вашей ветки
+    paths:
+      - 'books/**' # Робот просыпается только если вы добавили что-то в папку books
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: |
+          pip install EbookLib lxml
+
+      - name: Run update script
+        run: python update_library.py
+
+      - name: Commit and push changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add js/books_data.json img/covers/*
+          git commit -m "Авто-обновление: добавлена книга и обложка" || exit 0
+          git push
