@@ -652,6 +652,8 @@
                     </div>
                 </div>
             `).join('');
+            // Вместо ссылки на скачивание или в дополнение к ней:
+<button onclick="openReader('${book.link}')" class="secondary-btn">Читать онлайн</button>
         }
 
         // Функция для экранирования HTML
@@ -751,9 +753,7 @@
                 books = books.filter(book => book.rating >= minRating);
             }
 
-            displayBooks(// Вместо ссылки на скачивание или в дополнение к ней:
-<button onclick="openReader('${book.link}')" class="secondary-btn">Читать онлайн</button>
-);
+            displayBooks(book);
         }
 
         // Добавление новой книги
