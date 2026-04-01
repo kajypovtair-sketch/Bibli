@@ -585,7 +585,7 @@
     `;
     document.body.appendChild(readerDiv);
 
-        try {
+    try {
         // Загружаем книгу принудительно как ArrayBuffer
         fetch(bookUrl)
             .then(response => response.arrayBuffer())
