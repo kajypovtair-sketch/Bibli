@@ -575,7 +575,7 @@
         }
 
         function openReader(bookUrl) {
-    if (typeof ePub === 'undefined') {
+    if (typeof epub === 'undefined') {
         alert("Библиотека не готова.");
         return;
     }
@@ -599,7 +599,7 @@
 
     try {
         // Указываем путь к папке с библиотекой, если нужно (обычно не требуется для CDN)
-        const book = ePub(bookUrl);
+        const book = epub(bookUrl);
         const rendition = book.renderTo("viewer", { 
             width: "100%", 
             height: "100%", 
