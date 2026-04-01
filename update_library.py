@@ -51,7 +51,18 @@ def main():
             full_path = os.path.join(books_dir, filename)
             title, author, cover = get_metadata(full_path)
             
-            data_list.append({
+            data_list.append({# Добавь это в data_list.append в файле update_library.py
+    "id": len(data_list) + 1, # Добавляем ID для работы методов поиска
+    "title": title,
+    "author": author,
+    "genre": "Classic",       # EPUB не всегда хранит жанр, можно пока ставить дефолт
+    "year": 2024,             # Можно вытащить из метаданных 'DC', 'date'
+    "rating": 5.0,            # Заглушка
+    "link": f"books/{filename}",
+    "image": cover,
+    "description": "Описание книги..."
+})
+
                 "title": title,
                 "author": author,
                 "link": f"books/{filename}",
