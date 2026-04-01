@@ -576,73 +576,47 @@
 
         function openReader(bookUrl) {
     if (typeof ePub === 'undefined') {
-        alert("Библиотека не готова.");
+        alert("Библиотека для чтения еще не загружена.");
         return;
     }
 
+    // Создаем окно читалки
     const readerDiv = document.createElement('div');
     readerDiv.id = 'reader-overlay';
     readerDiv.style.cssText = "position:fixed; top:0; left:0; width:100%; height:100%; background:white; z-index:9999; display:flex; flex-direction:column;";
     readerDiv.innerHTML = `
-        <div style="padding:10px; background:#667eea; color:white; display:flex; justify-content:space-between; align-items:center; box-shadow:0 2px 5px rgba(0,0,0,0.1);">
-            <button onclick="document.getElementById('reader-overlay').remove()" style="background:none; border:none; color:white; cursor:pointer; font-size:18px; font-weight:bold;">✖ Закрыть</button>
-            <span style="font-size:14px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:200px;">${bookUrl.split('/').pop()}</span>
+        <div style="padding:10px; background:#667eea; color:white; display:flex; justify-content:space-between; align-items:center;">
+            <button onclick="document.getElementById('reader-overlay').remove()" style="background:none; border:none; color:white; cursor:pointer; font-size:18px;">✖ Закрыть</button>
+            <span style="font-size:14px;">Чтение: ${bookUrl.split('/').pop()}</span>
             <div style="width:50px"></div>
         </div>
-        <div id="viewer" style="flex-grow:1; background:#ffffff;"></div>
-        <div style="padding:15px; text-align:center; border-top:1px solid #eee; background:#f9f9f9;">
-            <button id="prev" style="padding:10px 25px; margin-right:10px; cursor:pointer; border-radius:5px; border:1px solid #667eea; background:white;">⬅ Назад</button>
-            <button id="next" style="padding:10px 25px; cursor:pointer; border-radius:5px; background:#667eea; color:white; border:none;">Вперед ➡</button>
+        <div id="viewer" style="flex-grow:1; background:#fff;"></div>
+        <div style="padding:15px; text-align:center; border-top:1px solid #ddd; background:#f9f9f9;">
+            <button id="prevBtn" style="padding:10px 25px; margin-right:10px; cursor:pointer;">⬅ Назад</button>
+            <button id="nextBtn" style="padding:10px 25px; cursor:pointer; background:#667eea; color:white; border:none; border-radius:5px;">Вперед ➡</button>
         </div>
     `;
     document.body.appendChild(readerDiv);
 
-        try {
-    // Добавляем принудительный тип файла, чтобы epub.js не гадал
-    const book = ePub(bookUrl);
-    const rendition = book.renderTo("viewer", {
-        width: "100%",
-        height: "100%",
-        flow: "paginated",
-        manager: "default"
-    });
-
-    // Важно: ждем готовности книги перед отображением
-    book.ready.then(() => {
-        return rendition.display();
-    }).then(() => {
-        console.log("Текст должен появиться!");
-    }).catch(err => {
-        console.error("Ошибка внутри ePub.js:", err);
-    });
-
-    document.getElementById("next").onclick = () => rendition.next();
-    document.getElementById("prev").onclick = () => rendition.prev();
-
-} catch (e) {
-    console.error("Критический сбой:", e);
-}
-
-        // Пытаемся отобразить книгу
-        rendition.display().then(() => {
-            console.log("Книга успешно отображена");
-            // Принудительно устанавливаем черный цвет текста, если книга пришла "пустой"
-            rendition.themes.default({ "body": { "color": "#000000 !important" }});
-        }).catch(err => {
-            console.error("Ошибка при отрисовке:", err);
-            document.getElementById('viewer').innerHTML = `
-                <div style="padding:40px; text-align:center;">
-                    <p style="color:red; font-weight:bold;">Ошибка загрузки текста!</p>
-                    <p>Файл не найден по адресу: <br><code style="background:#eee; padding:2px 5px;">${bookUrl}</code></p>
-                    <p style="font-size:12px; margin-top:10px; color:#666;">Проверьте, что имя файла на GitHub совпадает с этим путем (включая большие буквы).</p>
-                </div>`;
+    try {
+        const book = ePub(bookUrl);
+        const rendition = book.renderTo("viewer", {
+            width: "100%",
+            height: "100%",
+            flow: "paginated",
+            manager: "default"
         });
 
-        document.getElementById("next").onclick = (e) => { e.preventDefault(); rendition.next(); };
-        document.getElementById("prev").onclick = (e) => { e.preventDefault(); rendition.prev(); };
+        rendition.display().catch(function(err) {
+            console.error("Ошибка отображения:", err);
+            document.getElementById('viewer').innerHTML = '<p style="padding:20px; color:red;">Не удалось загрузить текст книги. Проверьте файл.</p>';
+        });
 
-    } catch (error) {
-        console.error("Ошибка инициализации книги:", error);
+        document.getElementById("nextBtn").onclick = function() { rendition.next(); };
+        document.getElementById("prevBtn").onclick = function() { rendition.prev(); };
+
+    } catch (e) {
+        console.error("Ошибка инициализации:", e);
     }
 }
 
