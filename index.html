@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Умная Библиотека</title>
+    <!-- MOVED HERE: Load epub.js library in head -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/epub.js/0.3.88/epub.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -622,37 +624,18 @@
             document.getElementById('averageRating').textContent = stats.averageRating;
         }
 
-        // Отображение книг
+        // FIXED: Single displayBooks function (removed duplicate)
         function displayBooks(books) {
-    const container = document.getElementById('booksContainer');
-    const resultsInfo = document.getElementById('resultsInfo');
-    
-    document.getElementById('resultsCount').textContent = books.length;
+            const container = document.getElementById('booksContainer');
+            const resultsInfo = document.getElementById('resultsInfo');
+            
+            document.getElementById('resultsCount').textContent = books.length;
 
-    if (books.length === 0) {
-        container.innerHTML = '<div class="no-results">📭 Книги не найдены</div>';
-        resultsInfo.textContent = '';
-        return;
-    }
-
-    resultsInfo.textContent = `✓ Найдено ${books.length} книг(и)`;
-    
-    container.innerHTML = books.map(book => `
-        <div class="book-card">
-            <div class="book-title">${escapeHtml(book.title)}</div>
-            <div class="book-author">✍️ ${escapeHtml(book.author)}</div>
-            <div class="book-meta">
-                <span class="book-genre">${escapeHtml(book.genre)}</span>
-                <span class="book-year">${book.year}</span>
-                <span class="book-rating">⭐ ${book.rating}</span>
-            </div>
-            <div class="book-description">${escapeHtml(book.description)}</div>
-            <div class="book-actions">
-                <button onclick="deleteBook(${book.id})" class="delete-btn">Удалить</button>
-            </div>
-        </div>
-    `).join('');
-        }
+            if (books.length === 0) {
+                container.innerHTML = '<div class="no-results">📭 Книги не найдены</div>';
+                resultsInfo.textContent = '';
+                return;
+            }
 
             resultsInfo.textContent = `✓ Найдено ${books.length} книг(и)`;
             
@@ -668,8 +651,7 @@
                     <div class="book-description">${escapeHtml(book.description)}</div>
                     <div class="book-actions">
                         <button onclick="deleteBook(${book.id})" class="delete-btn">Удалить</button>
-                        <button onclick="openReader('${book.link}')" class="secondary-btn">Читать онлайн</button>
-                   </div>
+                    </div>
                 </div>
             `).join('');
         }
@@ -712,7 +694,7 @@
             displayBooks(books);
         }
 
-        // Обновление отображения с фильтрами
+        // FIXED: updateDisplay now passes correct variable (books, not book)
         function updateDisplay() {
             const searchQuery = document.getElementById('searchInput').value;
             const selectedGenre = document.getElementById('genreFilter').value;
@@ -771,7 +753,7 @@
                 books = books.filter(book => book.rating >= minRating);
             }
 
-            displayBooks(book);
+            displayBooks(books); // FIXED: was displayBooks(book)
         }
 
         // Добавление новой книги
@@ -818,24 +800,52 @@
         function clearFilters() {
             displayAllBooks();
         }
-        // 1. Подключаем саму библиотеку в head: 
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/epub.js/0.3.88/epub.min.js"></script>
 
-         function openReader(bookUrl) {
-    const readerDiv = document.createElement('div');
-    readerDiv.id = 'reader-overlay';
-    readerDiv.innerHTML = `
-        <div style="position:fixed; top:0; left:0; width:100%; height:100%; background:white; z-index:9999; display:flex; flex-direction:column;">
-            <div style="padding: 10px; background: #667eea; color: white; display: flex; justify-content: space-between;">
-                <button onclick="document.getElementById('reader-overlay').remove()" style="background:none; border:none; color:white; cursor:pointer;">✖ Закрыть</button>
-                <span>Чтение: ${bookUrl.split('/').pop()}</span>
-            </div>
-            <div id="viewer" style="flex-grow: 1;"></div>
-            <div style="padding: 20px; text-align: center;">
-                <button id="prev" style="margin-right:20px;">⬅ Назад</button>
-                <button id="next">Вперед ➡</button>
-            </div>
-        </div>
+        // FIXED: Proper openReader implementation
+        function openReader(bookUrl) {
+            if (!bookUrl) {
+                alert('URL книги не указан');
+                return;
+            }
+
+            const readerDiv = document.createElement('div');
+            readerDiv.id = 'reader-overlay';
+            readerDiv.innerHTML = `
+                <div style="position:fixed; top:0; left:0; width:100%; height:100%; background:white; z-index:9999; display:flex; flex-direction:column;">
+                    <div style="padding: 10px; background: #667eea; color: white; display: flex; justify-content: space-between;">
+                        <button onclick="document.getElementById('reader-overlay').remove()" style="background:none; border:none; color:white; cursor:pointer; font-size:1.2rem;">✖ Закрыть</button>
+                        <span>Чтение: ${escapeHtml(bookUrl.split('/').pop())}</span>
+                    </div>
+                    <div id="viewer" style="flex-grow: 1;"></div>
+                    <div style="padding: 20px; text-align: center;">
+                        <button id="prev" style="margin-right:20px; padding: 10px 20px;">⬅ Назад</button>
+                        <button id="next" style="padding: 10px 20px;">Вперед ➡</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(readerDiv);
+
+            // Инициализация книги (если epub.js загружена)
+            if (typeof ePub !== 'undefined') {
+                const book = ePub(bookUrl);
+                const rendition = book.renderTo("viewer", {
+                    width: "100%",
+                    height: "100%",
+                    flow: "paginated"
+                });
+
+                rendition.display();
+
+                // Навигация
+                document.getElementById("next").onclick = () => rendition.next();
+                document.getElementById("prev").onclick = () => rendition.prev();
+            } else {
+                document.getElementById("viewer").innerHTML = '<p style="padding: 20px;">EPUB.js не загружена. Пожалуйста, проверьте подключение библиотеки.</p>';
+            }
+        }
+
+        // Инициализация при загрузке страницы
+        window.addEventListener('DOMContentLoaded', initializeUI);
     </script>
 </body>
 </html>
