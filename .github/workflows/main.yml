@@ -11,16 +11,17 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - name: Checkout repository 
+        uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.9'
 
       - name: Install dependencies
         run: |
+          python -m pip install --upgrade pip
           pip install EbookLib lxml
 
       - name: Run update script
@@ -28,8 +29,8 @@ jobs:
 
       - name: Commit and push changes
         run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add js/books_data.json img/covers/*
-          git commit -m "Авто-обновление: добавлена книга и обложка" || exit 0
+          git config --global user.name 'github-actions'
+          git config --global user.email 'github-actions@github.com'
+          git add js/books_data.json img/covers/
+          git commit -m "Auto-update library data" || echo "No changes to commit"
           git push
