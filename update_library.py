@@ -63,11 +63,11 @@ def main():
     "description": "Описание книги..."  
 })
 
-        "title": title,
-        "author": author,
-        "link": f"books/{filename}",
-        "image": cover
-        })
+    "title": title,
+    "author": author,
+    "link": f"books/{filename}",
+    "image": cover
+})
 
     os.makedirs('js', exist_ok=True)
     with open('js/books_data.json', 'w', encoding='utf-8') as f:
