@@ -1,1 +1,13 @@
-[]
+[
+    {
+        "id": 1,
+        "title": "The Four Feathers",
+        "author": "A. E. W. Mason",
+        "genre": "Classic",
+        "year": 2024,
+        "rating": 5.0,
+        "link": "books/a-e-w-mason_the-four-feathers.epub",
+        "image": "img/covers/a-e-w-mason_the-four-feathers.epub.jpg",
+        "description": "Автоматически добавленная книга."
+    }
+]
