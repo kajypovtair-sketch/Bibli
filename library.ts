@@ -41,7 +41,9 @@ class Library {
                     <h3>${book.title}</h3>
                     <p>${book.author}</p>
                     <a href="${book.link}" class="download-btn" download>Скачать</a>
+                    <button onclick="openReader('${book.link}')">Читать онлайн</button>
                 </div>
+
             `;
             this.container?.appendChild(card);
         });
