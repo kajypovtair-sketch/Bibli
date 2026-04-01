@@ -819,10 +819,9 @@
             displayAllBooks();
         }
         // 1. Подключаем саму библиотеку в head: 
-// <script src="https://cdnjs.cloudflare.com/ajax/libs/epub.js/0.3.88/epub.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/epub.js/0.3.88/epub.min.js"></script>
 
-function openReader(bookUrl) {
-    // Создаем простую читалку поверх сайта
+         function openReader(bookUrl) {
     const readerDiv = document.createElement('div');
     readerDiv.id = 'reader-overlay';
     readerDiv.innerHTML = `
