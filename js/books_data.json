@@ -9,5 +9,16 @@
         "link": "books/a-e-w-mason_the-four-feathers.epub",
         "image": "img/covers/a-e-w-mason_the-four-feathers.epub.jpg",
         "description": "Автоматически добавленная книга."
+    },
+    {
+        "id": 2,
+        "title": "Frankenstein; or, the modern prometheus",
+        "author": "Mary Wollstonecraft Shelley",
+        "genre": "Classic",
+        "year": 2024,
+        "rating": 5.0,
+        "link": "books/pg84-images.epub",
+        "image": "img/covers/pg84-images.epub.jpg",
+        "description": "Автоматически добавленная книга."
     }
 ]
