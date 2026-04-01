@@ -1,6 +1,17 @@
 [
     {
         "id": 1,
+        "title": "Pride and Prejudice",
+        "author": "Jane Austen",
+        "genre": "Classic",
+        "year": 2024,
+        "rating": 5.0,
+        "link": "books/pg1342-images.epub",
+        "image": "img/covers/pg1342-images.epub.jpg",
+        "description": "Автоматически добавленная книга."
+    },
+    {
+        "id": 2,
         "title": "The City of God, Volume I",
         "author": "Saint of Hippo Augustine",
         "genre": "Classic",
@@ -11,7 +22,7 @@
         "description": "Автоматически добавленная книга."
     },
     {
-        "id": 2,
+        "id": 3,
         "title": "Frankenstein; or, the modern prometheus",
         "author": "Mary Wollstonecraft Shelley",
         "genre": "Classic",
@@ -22,7 +33,7 @@
         "description": "Автоматически добавленная книга."
     },
     {
-        "id": 3,
+        "id": 4,
         "title": "Moby Dick; Or, The Whale",
         "author": "Herman Melville",
         "genre": "Classic",
