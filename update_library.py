@@ -60,14 +60,14 @@ def main():
     "rating": 5.0,            # Заглушка
     "link": f"books/{filename}",
     "image": cover,
-    "description": "Описание книги..."
+    "description": "Описание книги..."  
 })
 
-                "title": title,
-                "author": author,
-                "link": f"books/{filename}",
-                "image": cover
-            })
+        "title": title,
+        "author": author,
+        "link": f"books/{filename}",
+        "image": cover
+        })
 
     os.makedirs('js', exist_ok=True)
     with open('js/books_data.json', 'w', encoding='utf-8') as f:
