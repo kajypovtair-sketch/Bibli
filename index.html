@@ -668,11 +668,10 @@
                     <div class="book-description">${escapeHtml(book.description)}</div>
                     <div class="book-actions">
                         <button onclick="deleteBook(${book.id})" class="delete-btn">Удалить</button>
-                    </div>
+                        <button onclick="openReader('${book.link}')" class="secondary-btn">Читать онлайн</button>
+                   </div>
                 </div>
             `).join('');
-            // Вместо ссылки на скачивание или в дополнение к ней:
-<button onclick="openReader('${book.link}')" class="secondary-btn">Читать онлайн</button>
         }
 
         // Функция для экранирования HTML
