@@ -818,9 +818,7 @@ function openReader(bookUrl) {
                 <button id="prev" style="margin-right:20px;">⬅ Назад</button>
                 <button id="next">Вперед ➡</button>
             </div>
-        </div>
-    `;
-    document.body.appendChild(readerDiv);
+            document.body.appendChild(readerDiv);
 
     // Инициализация книги
     const book = ePub(bookUrl);
@@ -840,6 +838,7 @@ function openReader(bookUrl) {
 
         // Инициализация при загрузке страницы
         window.addEventListener('DOMContentLoaded', initializeUI);
+        </div>
     </script>
 </body>
 </html>
