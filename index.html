@@ -415,7 +415,6 @@
     </div>
 
     <script>
-        // Класс SmartLibrary (реализация из TypeScript)
         class SmartLibrary {
             constructor() {
                 this.books = [];
@@ -424,134 +423,55 @@
             }
 
             async initializeBooks() {
-    this.books = []; 
-    this.bookId = 1;
+                try {
+                    // Загружаем данные из JSON (с обходом кэша)
+                    const response = await fetch('js/books_data.json?v=' + Date.now());
+                    if (!response.ok) throw new Error("JSON не найден");
+                    
+                    const externalBooks = await response.json();
+                    
+                    // Очищаем и заполняements
+                    this.books = externalBooks.map(book => ({
+                        id: this.bookId++,
+                        title: book.title || "Без названия",
+                        author: book.author || "Неизвестен",
+                        genre: book.genre || "Классика",
+                        year: book.year || 2024,
+                        rating: book.rating || 5.0,
+                        description: book.description || "Книга из вашей библиотеки",
+                        link: book.link,   
+                        image: book.image  
+                    }));
 
-    try {
-        const response = await fetch('js/books_data.json?v=' + Date.now());
-        
-        if (!response.ok) {
-            throw new Error("Файл данных не найден на сервере");
-        }
-
-        const externalBooks = await response.json();
-        console.log("Данные из JSON успешно загружены:", externalBooks);
-
-        externalBooks.forEach(book => {
-            this.books.push({
-                id: this.bookId++,
-                title: book.title || "Без названия",
-                author: book.author || "Неизвестен",
-                genre: book.genre || "Классика",
-                year: book.year || 2024,
-                rating: book.rating || 5.0,
-                description: book.description || "Описание скоро появится...",
-                link: book.link,   
-                image: book.image  
-            });
-        });
-
-        updateStatistics(); 
-        displayAllBooks(); 
-
-    } catch (error) {
-        console.error("Ошибка загрузки внешних книг:", error);
-        
-    }
-}
-;
+                    // После загрузки обновляем всё
+                    populateGenreFilter();
+                    updateStatistics(); 
+                    displayAllBooks(); 
+                } catch (error) {
+                    console.error("Ошибка загрузки:", error);
+                }
             }
 
             addBook(title, author, genre, year, rating, description) {
-                const newBook = {
-                    id: this.bookId++,
-                    title,
-                    author,
-                    genre,
-                    year,
-                    rating,
-                    description
-                };
-                this.books.push(newBook);
-                return newBook;
+                this.books.push({ id: this.bookId++, title, author, genre, year, rating, description });
+                return true;
             }
-
-            getAllBooks() {
-                return [...this.books];
+            getAllBooks() { return [...this.books]; }
+            getGenres() { return Array.from(new Set(this.books.map(b => b.genre))).sort(); }
+            sortByRating() { return [...this.books].sort((a, b) => b.rating - a.rating); }
+            sortByYear() { return [...this.books].sort((a, b) => b.year - a.year); }
+            sortByTitle() { return [...this.books].sort((a, b) => a.title.localeCompare(b.title)); }
+            sortByAuthor() { return [...this.books].sort((a, b) => a.author.localeCompare(b.author)); }
+            removeBook(id) { 
+                const idx = this.books.findIndex(b => b.id === id);
+                if (idx !== -1) this.books.splice(idx, 1);
             }
-
-            filterByGenre(genre) {
-                return this.books.filter(book => book.genre.toLowerCase() === genre.toLowerCase());
-            }
-
-            filterByMinRating(minRating) {
-                return this.books.filter(book => book.rating >= minRating);
-            }
-
-            search(query) {
-                const lowerQuery = query.toLowerCase();
-                return this.books.filter(book =>
-                    book.title.toLowerCase().includes(lowerQuery) ||
-                    book.author.toLowerCase().includes(lowerQuery) ||
-                    book.description.toLowerCase().includes(lowerQuery)
-                );
-            }
-
-            getGenres() {
-                const genres = new Set(this.books.map(book => book.genre));
-                return Array.from(genres).sort();
-            }
-
-            sortByRating(descending = true) {
-                const sorted = [...this.books];
-                sorted.sort((a, b) => descending ? b.rating - a.rating : a.rating - b.rating);
-                return sorted;
-            }
-
-            sortByYear(descending = true) {
-                const sorted = [...this.books];
-                sorted.sort((a, b) => descending ? b.year - a.year : a.year - b.year);
-                return sorted;
-            }
-
-            sortByTitle(ascending = true) {
-                const sorted = [...this.books];
-                sorted.sort((a, b) => 
-                    ascending 
-                        ? a.title.localeCompare(b.title) 
-                        : b.title.localeCompare(a.title)
-                );
-                return sorted;
-            }
-
-            sortByAuthor(ascending = true) {
-                const sorted = [...this.books];
-                sorted.sort((a, b) => 
-                    ascending 
-                        ? a.author.localeCompare(b.author) 
-                        : b.author.localeCompare(a.author)
-                );
-                return sorted;
-            }
-
-            getBookById(id) {
-                return this.books.find(book => book.id === id);
-            }
-
-            removeBook(id) {
-                const index = this.books.findIndex(book => book.id === id);
-                if (index !== -1) {
-                    this.books.splice(index, 1);
-                    return true;
-                }
-                return false;
-            }
-
             getStatistics() {
+                if (this.books.length === 0) return { totalBooks: 0, genres: [], averageRating: 0 };
                 return {
                     totalBooks: this.books.length,
                     genres: this.getGenres(),
-                    averageRating: (this.books.reduce((sum, book) => sum + book.rating, 0) / this.books.length).toFixed(2),
+                    averageRating: (this.books.reduce((s, b) => s + b.rating, 0) / this.books.length).toFixed(1),
                 };
             }
         }
@@ -559,19 +479,16 @@
         const library = new SmartLibrary();
 
         function initializeUI() {
-            populateGenreFilter();
-            updateStatistics();
-            displayAllBooks();
+            // Сама библиотека вызовет отрисовку после fetch
         }
 
         function populateGenreFilter() {
-            const genreFilter = document.getElementById('genreFilter');
-            const genres = library.getGenres();
-            genres.forEach(genre => {
-                const option = document.createElement('option');
-                option.value = genre;
-                option.textContent = genre;
-                genreFilter.appendChild(option);
+            const filter = document.getElementById('genreFilter');
+            filter.innerHTML = '<option value="">Все жанры</option>';
+            library.getGenres().forEach(g => {
+                const opt = document.createElement('option');
+                opt.value = g; opt.textContent = g;
+                filter.appendChild(opt);
             });
         }
 
@@ -584,20 +501,16 @@
 
         function displayBooks(books) {
             const container = document.getElementById('booksContainer');
-            const resultsInfo = document.getElementById('resultsInfo');
-            
             document.getElementById('resultsCount').textContent = books.length;
 
             if (books.length === 0) {
                 container.innerHTML = '<div class="no-results">📭 Книги не найдены</div>';
-                resultsInfo.textContent = '';
                 return;
             }
 
-            resultsInfo.textContent = `✓ Найдено ${books.length} книг(и)`;
-            
             container.innerHTML = books.map(book => `
                 <div class="book-card">
+                    ${book.image ? `<img src="${book.image}" style="width:100%; height:180px; object-fit:cover; border-radius:8px; margin-bottom:15px;" onerror="this.src='https://via.placeholder.com/150x200?text=No+Cover'">` : ''}
                     <div class="book-title">${escapeHtml(book.title)}</div>
                     <div class="book-author">✍️ ${escapeHtml(book.author)}</div>
                     <div class="book-meta">
@@ -607,202 +520,84 @@
                     </div>
                     <div class="book-description">${escapeHtml(book.description)}</div>
                     <div class="book-actions">
+                        ${book.link ? `<button onclick="openReader('${book.link}')" style="background:#28a745;">📖 Читать</button>` : ''}
                         <button onclick="deleteBook(${book.id})" class="delete-btn">Удалить</button>
                     </div>
                 </div>
             `).join('');
         }
 
-        // Функция для экранирования HTML
         function escapeHtml(text) {
-            const map = {
-                '&': '&amp;',
-                '<': '&lt;',
-                '>': '&gt;',
-                '"': '&quot;',
-                "'": '&#039;'
-            };
-            return text.replace(/[&<>"']/g, m => map[m]);
+            const map = {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'};
+            return String(text).replace(/[&<>"']/g, m => map[m]);
         }
 
-        // Отображение всех книг
         function displayAllBooks() {
             const sortBy = document.getElementById('sortBy').value;
             let books = library.getAllBooks();
-
-            switch(sortBy) {
-                case 'title':
-                    books = library.sortByTitle(true);
-                    break;
-                case 'author':
-                    books = library.sortByAuthor(true);
-                    break;
-                case 'year':
-                    books = library.sortByYear(true);
-                    break;
-                case 'rating':
-                default:
-                    books = library.sortByRating(true);
-            }
-
-            document.getElementById('searchInput').value = '';
-            document.getElementById('genreFilter').value = '';
-            document.getElementById('ratingFilter').value = '0';
+            if (sortBy === 'title') books = library.sortByTitle();
+            else if (sortBy === 'author') books = library.sortByAuthor();
+            else if (sortBy === 'year') books = library.sortByYear();
+            else books = library.sortByRating();
             displayBooks(books);
         }
 
-        // FIXED: updateDisplay now passes correct variable (books, not book)
         function updateDisplay() {
-            const searchQuery = document.getElementById('searchInput').value;
-            const selectedGenre = document.getElementById('genreFilter').value;
-            const minRating = parseFloat(document.getElementById('ratingFilter').value) || 0;
-            const sortBy = document.getElementById('sortBy').value;
-
-            let books = library.getAllBooks();
-
-            // Применение фильтров
-            if (searchQuery) {
-                books = books.filter(book =>
-                    book.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                    book.author.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                    book.description.toLowerCase().includes(searchQuery.toLowerCase())
-                );
-            }
-
-            if (selectedGenre) {
-                books = books.filter(book => book.genre === selectedGenre);
-            }
-
-            if (minRating > 0) {
-                books = books.filter(book => book.rating >= minRating);
-            }
-
-            // Применение сортировки
-            switch(sortBy) {
-                case 'title':
-                    books = library.sortByTitle(true);
-                    break;
-                case 'author':
-                    books = library.sortByAuthor(true);
-                    break;
-                case 'year':
-                    books = library.sortByYear(true);
-                    break;
-                case 'rating':
-                default:
-                    books = library.sortByRating(true);
-            }
-
-            // Переприменение фильтров после сортировки
-            if (searchQuery) {
-                books = books.filter(book =>
-                    book.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                    book.author.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                    book.description.toLowerCase().includes(searchQuery.toLowerCase())
-                );
-            }
-
-            if (selectedGenre) {
-                books = books.filter(book => book.genre === selectedGenre);
-            }
-
-            if (minRating > 0) {
-                books = books.filter(book => book.rating >= minRating);
-            }
-
-            displayBooks(books); // FIXED: was displayBooks(book)
-        }
-
-        // Добавление новой книги
-        function addNewBook() {
-            const title = document.getElementById('newTitle').value;
-            const author = document.getElementById('newAuthor').value;
-            const genre = document.getElementById('newGenre').value;
-            const year = parseInt(document.getElementById('newYear').value);
-            const rating = parseFloat(document.getElementById('newRating').value);
-            const description = document.getElementById('newDescription').value;
-
-            if (!title || !author || !genre || !year || !rating || !description) {
-                alert('Пожалуйста, заполните все поля');
-                return;
-            }
-
-            library.addBook(title, author, genre, year, rating, description);
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const genre = document.getElementById('genreFilter').value;
+            const rating = parseFloat(document.getElementById('ratingFilter').value) || 0;
             
-            // Очистка формы
-            document.getElementById('newTitle').value = '';
-            document.getElementById('newAuthor').value = '';
-            document.getElementById('newGenre').value = '';
-            document.getElementById('newYear').value = '';
-            document.getElementById('newRating').value = '';
-            document.getElementById('newDescription').value = '';
-
-            // Обновление интерфейса
-            populateGenreFilter();
-            updateStatistics();
-            displayAllBooks();
-            alert('✓ Книга успешно добавлена!');
+            const books = library.getAllBooks().filter(b => 
+                (b.title.toLowerCase().includes(query) || b.author.toLowerCase().includes(query)) &&
+                (!genre || b.genre === genre) &&
+                (b.rating >= rating)
+            );
+            displayBooks(books);
         }
 
-        // Удаление книги
+        function addNewBook() {
+            const t = document.getElementById('newTitle').value;
+            const a = document.getElementById('newAuthor').value;
+            if (!t || !a) return alert('Введите название и автора');
+            library.addBook(t, a, "Manual", 2024, 5.0, "Добавлено вручную");
+            updateStatistics(); updateDisplay();
+        }
+
         function deleteBook(id) {
-            if (confirm('Вы уверены, что хотите удалить эту книгу?')) {
-                library.removeBook(id);
-                updateStatistics();
-                updateDisplay();
-            }
+            if (confirm('Удалить?')) { library.removeBook(id); updateStatistics(); updateDisplay(); }
         }
 
-        // Очистка фильтров
         function clearFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('genreFilter').value = '';
+            document.getElementById('ratingFilter').value = '0';
             displayAllBooks();
         }
 
-        // FIXED: Proper openReader implementation
         function openReader(bookUrl) {
-            if (!bookUrl) {
-                alert('URL книги не указан');
-                return;
-            }
-
             const readerDiv = document.createElement('div');
             readerDiv.id = 'reader-overlay';
+            readerDiv.style.cssText = "position:fixed; top:0; left:0; width:100%; height:100%; background:white; z-index:9999; display:flex; flex-direction:column;";
             readerDiv.innerHTML = `
-                <div style="position:fixed; top:0; left:0; width:100%; height:100%; background:white; z-index:9999; display:flex; flex-direction:column;">
-                    <div style="padding: 10px; background: #667eea; color: white; display: flex; justify-content: space-between;">
-                        <button onclick="document.getElementById('reader-overlay').remove()" style="background:none; border:none; color:white; cursor:pointer; font-size:1.2rem;">✖ Закрыть</button>
-                        <span>Чтение: ${escapeHtml(bookUrl.split('/').pop())}</span>
-                    </div>
-                    <div id="viewer" style="flex-grow: 1;"></div>
-                    <div style="padding: 20px; text-align: center;">
-                        <button id="prev" style="margin-right:20px; padding: 10px 20px;">⬅ Назад</button>
-                        <button id="next" style="padding: 10px 20px;">Вперед ➡</button>
-                    </div>
-                    </div>
+                <div style="padding:10px; background:#667eea; color:white; display:flex; justify-content:space-between; align-items:center;">
+                    <button onclick="document.getElementById('reader-overlay').remove()" style="background:none; border:none; color:white; cursor:pointer;">✖ Закрыть</button>
+                    <span>${bookUrl.split('/').pop()}</span>
+                    <div style="width:50px"></div>
+                </div>
+                <div id="viewer" style="flex-grow:1;"></div>
+                <div style="padding:15px; text-align:center; border-top:1px solid #ddd;">
+                    <button id="prev" style="padding:8px 20px; margin-right:10px;">⬅ Назад</button>
+                    <button id="next" style="padding:8px 20px;">Вперед ➡</button>
                 </div>
             `;
             document.body.appendChild(readerDiv);
-
-            // Инициализация книги (если epub.js загружена)
-            if (typeof ePub !== 'undefined') {
-                const book = ePub(bookUrl);
-                const rendition = book.renderTo("viewer", {
-                    width: "100%",
-                    height: "100%",
-                    flow: "paginated"
-                });
-
-                rendition.display();
-
-                // Навигация
-                document.getElementById("next").onclick = () => rendition.next();
-                document.getElementById("prev").onclick = () => rendition.prev();
-            } else {
-                document.getElementById("viewer").innerHTML = '<p style="padding: 20px;">EPUB.js не загружена. Пожалуйста, проверьте подключение библиотеки.</p>';
-            }
+            const book = ePub(bookUrl);
+            const rendition = book.renderTo("viewer", { width: "100%", height: "100%", flow: "paginated" });
+            rendition.display();
+            document.getElementById("next").onclick = () => rendition.next();
+            document.getElementById("prev").onclick = () => rendition.prev();
         }
 
-        // Инициализация при загрузке страницы
         window.addEventListener('DOMContentLoaded', initializeUI);
     </script>
 </body>
