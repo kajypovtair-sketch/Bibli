@@ -6,7 +6,7 @@
         "genre": "Classic",
         "year": 2024,
         "rating": 5.0,
-        "link": "books/a-e-w-mason_the-four-feathers.epub",
+        "link": "./books/a-e-w-mason_the-four-feathers.epub",
         "image": "img/covers/a-e-w-mason_the-four-feathers.epub.jpg",
         "description": "Автоматически добавленная книга."
     },
@@ -17,7 +17,7 @@
         "genre": "Classic",
         "year": 2024,
         "rating": 5.0,
-        "link": "books/pg84-images.epub",
+        "link": "./books/pg84-images.epub",
         "image": "img/covers/pg84-images.epub.jpg",
         "description": "Автоматически добавленная книга."
     }
