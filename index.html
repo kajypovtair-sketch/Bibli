@@ -624,16 +624,35 @@
 
         // Отображение книг
         function displayBooks(books) {
-            const container = document.getElementById('booksContainer');
-            const resultsInfo = document.getElementById('resultsInfo');
-            
-            document.getElementById('resultsCount').textContent = books.length;
+    const container = document.getElementById('booksContainer');
+    const resultsInfo = document.getElementById('resultsInfo');
+    
+    document.getElementById('resultsCount').textContent = books.length;
 
-            if (books.length === 0) {
-                container.innerHTML = '<div class="no-results">📭 Книги не найдены</div>';
-                resultsInfo.textContent = '';
-                return;
-            }
+    if (books.length === 0) {
+        container.innerHTML = '<div class="no-results">📭 Книги не найдены</div>';
+        resultsInfo.textContent = '';
+        return;
+    }
+
+    resultsInfo.textContent = `✓ Найдено ${books.length} книг(и)`;
+    
+    container.innerHTML = books.map(book => `
+        <div class="book-card">
+            <div class="book-title">${escapeHtml(book.title)}</div>
+            <div class="book-author">✍️ ${escapeHtml(book.author)}</div>
+            <div class="book-meta">
+                <span class="book-genre">${escapeHtml(book.genre)}</span>
+                <span class="book-year">${book.year}</span>
+                <span class="book-rating">⭐ ${book.rating}</span>
+            </div>
+            <div class="book-description">${escapeHtml(book.description)}</div>
+            <div class="book-actions">
+                <button onclick="deleteBook(${book.id})" class="delete-btn">Удалить</button>
+            </div>
+        </div>
+    `).join('');
+        }
 
             resultsInfo.textContent = `✓ Найдено ${books.length} книг(и)`;
             
