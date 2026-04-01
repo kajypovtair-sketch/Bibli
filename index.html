@@ -423,81 +423,43 @@
                 this.initializeBooks();
             }
 
-            initializeBooks() {
-                this.books = [
-                    {
-                        id: this.bookId++,
-                        title: "1984",
-                        author: "George Orwell",
-                        genre: "Dystopia",
-                        year: 1949,
-                        rating: 4.8,
-                        description: "A dystopian novel about a totalitarian state"
-                    },
-                    {
-                        id: this.bookId++,
-                        title: "To Kill a Mockingbird",
-                        author: "Harper Lee",
-                        genre: "Drama",
-                        year: 1960,
-                        rating: 4.9,
-                        description: "A gripping tale of racial injustice and childhood innocence"
-                    },
-                    {
-                        id: this.bookId++,
-                        title: "The Great Gatsby",
-                        author: "F. Scott Fitzgerald",
-                        genre: "Romance",
-                        year: 1925,
-                        rating: 4.7,
-                        description: "A classic American novel about love and ambition"
-                    },
-                    {
-                        id: this.bookId++,
-                        title: "Dune",
-                        author: "Frank Herbert",
-                        genre: "Science Fiction",
-                        year: 1965,
-                        rating: 4.8,
-                        description: "An epic space opera set on a desert planet"
-                    },
-                    {
-                        id: this.bookId++,
-                        title: "The Hobbit",
-                        author: "J.R.R. Tolkien",
-                        genre: "Fantasy",
-                        year: 1937,
-                        rating: 4.9,
-                        description: "A journey through a magical world"
-                    },
-                    {
-                        id: this.bookId++,
-                        title: "Murder on the Orient Express",
-                        author: "Agatha Christie",
-                        genre: "Mystery",
-                        year: 1934,
-                        rating: 4.7,
-                        description: "A classic detective mystery on a luxury train"
-                    },
-                    {
-                        id: this.bookId++,
-                        title: "The Catcher in the Rye",
-                        author: "J.D. Salinger",
-                        genre: "Drama",
-                        year: 1951,
-                        rating: 4.5,
-                        description: "A coming-of-age story of teenage angst"
-                    },
-                    {
-                        id: this.bookId++,
-                        title: "Foundation",
-                        author: "Isaac Asimov",
-                        genre: "Science Fiction",
-                        year: 1951,
-                        rating: 4.8,
-                        description: "A groundbreaking science fiction epic"
-                    }
-                ];
+            async initializeBooks() {
+    this.books = []; 
+    this.bookId = 1;
+
+    try {
+        const response = await fetch('js/books_data.json?v=' + Date.now());
+        
+        if (!response.ok) {
+            throw new Error("Файл данных не найден на сервере");
+        }
+
+        const externalBooks = await response.json();
+        console.log("Данные из JSON успешно загружены:", externalBooks);
+
+        externalBooks.forEach(book => {
+            this.books.push({
+                id: this.bookId++,
+                title: book.title || "Без названия",
+                author: book.author || "Неизвестен",
+                genre: book.genre || "Классика",
+                year: book.year || 2024,
+                rating: book.rating || 5.0,
+                description: book.description || "Описание скоро появится...",
+                link: book.link,   
+                image: book.image  
+            });
+        });
+
+        updateStatistics(); 
+        displayAllBooks(); 
+
+    } catch (error) {
+        console.error("Ошибка загрузки внешних книг:", error);
+        
+    }
+}
+;
             }
 
             addBook(title, author, genre, year, rating, description) {
@@ -594,17 +556,14 @@
             }
         }
 
-        // Инициализация библиотеки
         const library = new SmartLibrary();
 
-        // Инициализация интерфейса
         function initializeUI() {
             populateGenreFilter();
             updateStatistics();
             displayAllBooks();
         }
 
-        // Заполнение списка жанров
         function populateGenreFilter() {
             const genreFilter = document.getElementById('genreFilter');
             const genres = library.getGenres();
@@ -616,7 +575,6 @@
             });
         }
 
-        // Обновление статистики
         function updateStatistics() {
             const stats = library.getStatistics();
             document.getElementById('totalBooks').textContent = stats.totalBooks;
@@ -624,7 +582,6 @@
             document.getElementById('averageRating').textContent = stats.averageRating;
         }
 
-        // FIXED: Single displayBooks function (removed duplicate)
         function displayBooks(books) {
             const container = document.getElementById('booksContainer');
             const resultsInfo = document.getElementById('resultsInfo');
