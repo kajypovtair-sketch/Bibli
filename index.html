@@ -424,13 +424,9 @@
 
             async initializeBooks() {
                 try {
-                    // Загружаем данные из JSON (с обходом кэша)
                     const response = await fetch('js/books_data.json?v=' + Date.now());
                     if (!response.ok) throw new Error("JSON не найден");
-                    
                     const externalBooks = await response.json();
-                    
-                    // Очищаем и заполняements
                     this.books = externalBooks.map(book => ({
                         id: this.bookId++,
                         title: book.title || "Без названия",
@@ -438,12 +434,10 @@
                         genre: book.genre || "Классика",
                         year: book.year || 2024,
                         rating: book.rating || 5.0,
-                        description: book.description || "Книга из вашей библиотеки",
+                        description: book.description || "Книга из библиотеки",
                         link: book.link,   
                         image: book.image  
                     }));
-
-                    // После загрузки обновляем всё
                     populateGenreFilter();
                     updateStatistics(); 
                     displayAllBooks(); 
@@ -478,12 +472,9 @@
 
         const library = new SmartLibrary();
 
-        function initializeUI() {
-            // Сама библиотека вызовет отрисовку после fetch
-        }
-
         function populateGenreFilter() {
             const filter = document.getElementById('genreFilter');
+            if (!filter) return;
             filter.innerHTML = '<option value="">Все жанры</option>';
             library.getGenres().forEach(g => {
                 const opt = document.createElement('option');
@@ -502,12 +493,10 @@
         function displayBooks(books) {
             const container = document.getElementById('booksContainer');
             document.getElementById('resultsCount').textContent = books.length;
-
             if (books.length === 0) {
                 container.innerHTML = '<div class="no-results">📭 Книги не найдены</div>';
                 return;
             }
-
             container.innerHTML = books.map(book => `
                 <div class="book-card">
                     ${book.image ? `<img src="${book.image}" style="width:100%; height:180px; object-fit:cover; border-radius:8px; margin-bottom:15px;" onerror="this.src='https://via.placeholder.com/150x200?text=No+Cover'">` : ''}
@@ -546,7 +535,6 @@
             const query = document.getElementById('searchInput').value.toLowerCase();
             const genre = document.getElementById('genreFilter').value;
             const rating = parseFloat(document.getElementById('ratingFilter').value) || 0;
-            
             const books = library.getAllBooks().filter(b => 
                 (b.title.toLowerCase().includes(query) || b.author.toLowerCase().includes(query)) &&
                 (!genre || b.genre === genre) &&
@@ -575,65 +563,43 @@
         }
 
         function openReader(bookUrl) {
-    if (typeof ePub === 'undefined') {
-        alert("Библиотека для чтения еще не загружена.");
-        return;
-    }
-
-    // Создаем окно читалки
-    const readerDiv = document.createElement('div');
-    readerDiv.id = 'reader-overlay';
-    readerDiv.style.cssText = "position:fixed; top:0; left:0; width:100%; height:100%; background:white; z-index:9999; display:flex; flex-direction:column;";
-    readerDiv.innerHTML = `
-        <div style="padding:10px; background:#667eea; color:white; display:flex; justify-content:space-between; align-items:center;">
-            <button onclick="document.getElementById('reader-overlay').remove()" style="background:none; border:none; color:white; cursor:pointer; font-size:18px;">✖ Закрыть</button>
-            <span style="font-size:14px;">Чтение: ${bookUrl.split('/').pop()}</span>
-            <div style="width:50px"></div>
-        </div>
-        <div id="viewer" style="flex-grow:1; background:#fff;"></div>
-        <div style="padding:15px; text-align:center; border-top:1px solid #ddd; background:#f9f9f9;">
-            <button id="prevBtn" style="padding:10px 25px; margin-right:10px; cursor:pointer;">⬅ Назад</button>
-            <button id="nextBtn" style="padding:10px 25px; cursor:pointer; background:#667eea; color:white; border:none; border-radius:5px;">Вперед ➡</button>
-        </div>
-    `;
-    document.body.appendChild(readerDiv);
-
-    try {
-    const book = ePub(bookUrl);
-    const rendition = book.renderTo("viewer", {
-        width: "100%",
-        height: "100%",
-        flow: "paginated", // Постраничное отображение
-        manager: "default"
-    });
-
-    // 1. Ждем, пока книга подготовится
-    book.ready.then(() => {
-        // 2. Принудительно задаем черный цвет текста и шрифт
-        rendition.themes.default({
-            body: {
-                "color": "#000000 !important",
-                "background": "#ffffff !important",
-                "font-family": "Arial, sans-serif !important"
+            if (typeof ePub === 'undefined') {
+                alert("Ошибка: Библиотека ePub не загружена.");
+                return;
             }
-        });
-        // 3. Отображаем книгу
-        return rendition.display();
-    }).then(() => {
-        console.log("Книга успешно отрисована!");
-    }).catch(err => {
-        console.error("Ошибка ePub:", err);
-        document.getElementById('viewer').innerHTML = '<p style="padding:20px;">Ошибка при чтении содержимого файла.</p>';
-    });
+            const readerDiv = document.createElement('div');
+            readerDiv.id = 'reader-overlay';
+            readerDiv.style.cssText = "position:fixed; top:0; left:0; width:100%; height:100%; background:white; z-index:9999; display:flex; flex-direction:column;";
+            readerDiv.innerHTML = `
+                <div style="padding:10px; background:#667eea; color:white; display:flex; justify-content:space-between; align-items:center;">
+                    <button onclick="document.getElementById('reader-overlay').remove()" style="background:none; border:none; color:white; cursor:pointer; font-size:18px;">✖ Закрыть</button>
+                    <span style="font-size:14px; opacity:0.8;">${bookUrl.split('/').pop()}</span>
+                    <div style="width:50px"></div>
+                </div>
+                <div id="viewer" style="flex-grow:1; background:#f4f4f9;"></div>
+                <div style="padding:15px; text-align:center; border-top:1px solid #ddd; background:white;">
+                    <button id="prev" style="padding:10px 25px; margin-right:10px; cursor:pointer; border-radius:5px; border:1px solid #667eea;">⬅ Назад</button>
+                    <button id="next" style="padding:10px 25px; cursor:pointer; border-radius:5px; background:#667eea; color:white; border:none;">Вперед ➡</button>
+                </div>
+            `;
+            document.body.appendChild(readerDiv);
 
-    document.getElementById("nextBtn").onclick = () => rendition.next();
-    document.getElementById("prevBtn").onclick = () => rendition.prev();
+            try {
+                const book = ePub(bookUrl);
+                const rendition = book.renderTo("viewer", { width: "100%", height: "100%", flow: "paginated" });
+                
+                book.ready.then(() => {
+                    rendition.themes.default({ "body": { "color": "#000 !important" } });
+                    return rendition.display();
+                });
 
-        catch (e) {
-    console.error("Сбой инициализации:", e);
-}
+                document.getElementById("next").onclick = (e) => { e.preventDefault(); rendition.next(); };
+                document.getElementById("prev").onclick = (e) => { e.preventDefault(); rendition.prev(); };
+            } catch (err) {
+                console.error(err);
+            }
+        }
 
-        window.addEventListener('DOMContentLoaded', initializeUI);
     </script>
 </body>
 </html>
