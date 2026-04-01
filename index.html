@@ -599,25 +599,38 @@
     document.body.appendChild(readerDiv);
 
     try {
-        const book = ePub(bookUrl);
-        const rendition = book.renderTo("viewer", {
-            width: "100%",
-            height: "100%",
-            flow: "paginated",
-            manager: "default"
+    const book = ePub(bookUrl);
+    const rendition = book.renderTo("viewer", {
+        width: "100%",
+        height: "100%",
+        flow: "paginated", // Постраничное отображение
+        manager: "default"
+    });
+
+    // 1. Ждем, пока книга подготовится
+    book.ready.then(() => {
+        // 2. Принудительно задаем черный цвет текста и шрифт
+        rendition.themes.default({
+            body: {
+                "color": "#000000 !important",
+                "background": "#ffffff !important",
+                "font-family": "Arial, sans-serif !important"
+            }
         });
+        // 3. Отображаем книгу
+        return rendition.display();
+    }).then(() => {
+        console.log("Книга успешно отрисована!");
+    }).catch(err => {
+        console.error("Ошибка ePub:", err);
+        document.getElementById('viewer').innerHTML = '<p style="padding:20px;">Ошибка при чтении содержимого файла.</p>';
+    });
 
-        rendition.display().catch(function(err) {
-            console.error("Ошибка отображения:", err);
-            document.getElementById('viewer').innerHTML = '<p style="padding:20px; color:red;">Не удалось загрузить текст книги. Проверьте файл.</p>';
-        });
+    document.getElementById("nextBtn").onclick = () => rendition.next();
+    document.getElementById("prevBtn").onclick = () => rendition.prev();
 
-        document.getElementById("nextBtn").onclick = function() { rendition.next(); };
-        document.getElementById("prevBtn").onclick = function() { rendition.prev(); };
-
-    } catch (e) {
-        console.error("Ошибка инициализации:", e);
-    }
+      } catch (e) {
+    console.error("Сбой инициализации:", e);
 }
 
         window.addEventListener('DOMContentLoaded', initializeUI);
