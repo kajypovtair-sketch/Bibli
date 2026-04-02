@@ -469,6 +469,81 @@
         }
 
         const library = new SmartLibrary();
+        async function uploadBookToGithub() {
+    const fileInput = document.getElementById('epubFile');
+    const copyrightChecked = document.getElementById('copyrightConfirm').checked;
+    const status = document.getElementById('uploadStatus');
+    const btn = document.getElementById('uploadBtn');
+
+    // 1. Проверки перед стартом
+    if (fileInput.files.length === 0) return alert("Сначала выберите .epub файл!");
+    if (!copyrightChecked) return alert("Нужно подтвердить авторские права!");
+
+    // 2. Запрашиваем токен
+    // СОВЕТ: Если не хочешь вводить его каждый раз, можно заменить prompt на "твой_токен" 
+    // (но только если ты уверен, что никто другой не откроет твой код!)
+    const token = prompt("Вставьте ваш GitHub Personal Access Token:");
+    if (!token) return;
+
+    const file = fileInput.files[0];
+    const fileName = file.name;
+    
+    status.style.display = "block";
+    status.style.color = "white";
+    status.textContent = "⏳ Читаю файл...";
+    btn.disabled = true;
+
+    const reader = new FileReader();
+    reader.onload = async function() {
+        try {
+            const base64Content = reader.result.split(',')[1];
+            
+            // --- НАСТРОЙКИ ---
+            const owner = "kajypovtair-sketch"; // Замени на свой логин GitHub
+            const repo = "Bibli";      // Твой репозиторий
+            const path = `books/${fileName}`; 
+            // -----------------
+
+            const url = `https://api.github.com/repos/${owner}/${repo}/contents/${path}`;
+
+            status.textContent = "🚀 Отправка в репозиторий...";
+
+            const response = await fetch(url, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `token ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    message: `Добавлена книга: ${fileName}`,
+                    content: base64Content
+                })
+            });
+
+            if (response.ok) {
+                status.style.color = "#28a745";
+                status.textContent = "✅ Готово! Файл на GitHub. Теперь подожди 1-2 минуты, пока сработает твой Python-скрипт.";
+                fileInput.value = '';
+                document.getElementById('copyrightConfirm').checked = false;
+            } else {
+                const errorData = await response.json();
+                // Если файл уже есть, GitHub выдаст ошибку 422
+                if (response.status === 422) {
+                    throw new Error("Файл с таким именем уже есть в папке books!");
+                }
+                throw new Error(errorData.message);
+            }
+        } catch (error) {
+            status.style.color = "#ff4d4d";
+            status.textContent = "❌ Ошибка: " + error.message;
+            console.error(error);
+        } finally {
+            btn.disabled = false;
+        }
+    };
+
+    reader.readAsDataURL(file);
+}
 
         function populateGenreFilter() {
             const filter = document.getElementById('genreFilter');
