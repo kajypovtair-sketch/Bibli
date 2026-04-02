@@ -78,6 +78,17 @@
     },
     {
         "id": 8,
+        "title": "Old Slowpoke",
+        "author": "Howard E. Morgan",
+        "genre": "Classic",
+        "year": 2024,
+        "rating": 5.0,
+        "link": "books/pg78296-images.epub",
+        "image": "img/covers/pg78296-images.epub.jpg",
+        "description": "Автоматически добавленная книга."
+    },
+    {
+        "id": 9,
         "title": "Dark power",
         "author": "Elisabeth Sanxay Holding",
         "genre": "Classic",
