@@ -45,6 +45,17 @@
     },
     {
         "id": 5,
+        "title": "Two hundred recipes for making salads, with thirty recipes for dressings and sauces",
+        "author": "Olive M. Hulse",
+        "genre": "Classic",
+        "year": 2024,
+        "rating": 5.0,
+        "link": "books/pg78314-images.epub",
+        "image": "img/covers/pg78314-images.epub.jpg",
+        "description": "Автоматически добавленная книга."
+    },
+    {
+        "id": 6,
         "title": "Frankenstein; or, the modern prometheus",
         "author": "Mary Wollstonecraft Shelley",
         "genre": "Classic",
@@ -55,7 +66,7 @@
         "description": "Автоматически добавленная книга."
     },
     {
-        "id": 6,
+        "id": 7,
         "title": "Moby Dick; Or, The Whale",
         "author": "Herman Melville",
         "genre": "Classic",
@@ -66,7 +77,7 @@
         "description": "Автоматически добавленная книга."
     },
     {
-        "id": 7,
+        "id": 8,
         "title": "Dark power",
         "author": "Elisabeth Sanxay Holding",
         "genre": "Classic",
