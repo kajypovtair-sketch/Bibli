@@ -56,17 +56,6 @@
     },
     {
         "id": 6,
-        "title": "Eugene Oneguine [Onegin] / A Romance of Russian Life in Verse",
-        "author": "Aleksandr Sergeevich Pushkin",
-        "genre": "Classic",
-        "year": 2024,
-        "rating": 5.0,
-        "link": "books/pg23997-images.epub",
-        "image": "img/covers/pg23997-images.epub.jpg",
-        "description": "Автоматически добавленная книга."
-    },
-    {
-        "id": 7,
         "title": "Moby Dick; Or, The Whale",
         "author": "Herman Melville",
         "genre": "Classic",
@@ -77,7 +66,7 @@
         "description": "Автоматически добавленная книга."
     },
     {
-        "id": 8,
+        "id": 7,
         "title": "Old Slowpoke",
         "author": "Howard E. Morgan",
         "genre": "Classic",
@@ -88,7 +77,7 @@
         "description": "Автоматически добавленная книга."
     },
     {
-        "id": 9,
+        "id": 8,
         "title": "Dark power",
         "author": "Elisabeth Sanxay Holding",
         "genre": "Classic",
