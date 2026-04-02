@@ -12,17 +12,6 @@
     },
     {
         "id": 2,
-        "title": "Eugene Onegin",
-        "author": "Alexander Pushkin",
-        "genre": "Classic",
-        "year": 2024,
-        "rating": 5.0,
-        "link": "books/alexander-pushkin_eugene-onegin_henry-spalding.epub",
-        "image": "img/covers/alexander-pushkin_eugene-onegin_henry-spalding.epub.jpg",
-        "description": "Автоматически добавленная книга."
-    },
-    {
-        "id": 3,
         "title": "Gyurkovicsin tytöt",
         "author": "Ferenc Herczeg",
         "genre": "Classic",
@@ -33,7 +22,7 @@
         "description": "Автоматически добавленная книга."
     },
     {
-        "id": 4,
+        "id": 3,
         "title": "Pride and Prejudice",
         "author": "Jane Austen",
         "genre": "Classic",
@@ -44,7 +33,7 @@
         "description": "Автоматически добавленная книга."
     },
     {
-        "id": 5,
+        "id": 4,
         "title": "The City of God, Volume I",
         "author": "Saint of Hippo Augustine",
         "genre": "Classic",
@@ -55,7 +44,7 @@
         "description": "Автоматически добавленная книга."
     },
     {
-        "id": 6,
+        "id": 5,
         "title": "Two hundred recipes for making salads, with thirty recipes for dressings and sauces",
         "author": "Olive M. Hulse",
         "genre": "Classic",
@@ -66,7 +55,7 @@
         "description": "Автоматически добавленная книга."
     },
     {
-        "id": 7,
+        "id": 6,
         "title": "Frankenstein; or, the modern prometheus",
         "author": "Mary Wollstonecraft Shelley",
         "genre": "Classic",
@@ -77,7 +66,7 @@
         "description": "Автоматически добавленная книга."
     },
     {
-        "id": 8,
+        "id": 7,
         "title": "Eugene Oneguine [Onegin] / A Romance of Russian Life in Verse",
         "author": "Aleksandr Sergeevich Pushkin",
         "genre": "Classic",
@@ -88,7 +77,7 @@
         "description": "Автоматически добавленная книга."
     },
     {
-        "id": 9,
+        "id": 8,
         "title": "Moby Dick; Or, The Whale",
         "author": "Herman Melville",
         "genre": "Classic",
@@ -99,7 +88,7 @@
         "description": "Автоматически добавленная книга."
     },
     {
-        "id": 10,
+        "id": 9,
         "title": "Old Slowpoke",
         "author": "Howard E. Morgan",
         "genre": "Classic",
@@ -110,7 +99,7 @@
         "description": "Автоматически добавленная книга."
     },
     {
-        "id": 11,
+        "id": 10,
         "title": "Dark power",
         "author": "Elisabeth Sanxay Holding",
         "genre": "Classic",
