@@ -328,35 +328,22 @@
 
         <!-- Секция добавления новой книги -->
         <div class="add-book-section">
-            <h2>➕ Добавить новую книгу</h2>
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="newTitle">Название</label>
-                    <input type="text" id="newTitle" placeholder="Название книги">
-                </div>
-                <div class="form-group">
-                    <label for="newAuthor">Автор</label>
-                    <input type="text" id="newAuthor" placeholder="Имя автора">
-                </div>
-                <div class="form-group">
-                    <label for="newGenre">Жанр</label>
-                    <input type="text" id="newGenre" placeholder="Жанр">
-                </div>
-                <div class="form-group">
-                    <label for="newYear">Год издания</label>
-                    <input type="text" id="newYear" placeholder="2024" max="2100">
-                </div>
-                <div class="form-group">
-                    <label for="newRating">Рейтинг</label>
-                    <input type="text" id="newRating" placeholder="4.5" max="5">
-                </div>
-                <div class="form-group">
-                    <label for="newDescription">Описание</label>
-                    <input type="text" id="newDescription" placeholder="Описание книги">
-                </div>
-            </div>
-            <button onclick="addNewBook()">Добавить книгу</button>
+    <h2>➕ Загрузить книгу в облако (GitHub)</h2>
+    <div class="form-row">
+        <div class="form-group">
+            <label for="epubFile">📁 Выберите .epub файл</label>
+            <input type="file" id="epubFile" accept=".epub">
         </div>
+    </div>
+    <div style="margin: 15px 0;">
+        <label style="display: flex; align-items: center; cursor: pointer; color: white;">
+            <input type="checkbox" id="copyrightConfirm" style="margin-right: 10px; width: 18px; height: 18px;">
+            Подтверждаю отсутствие нарушения авторских прав
+        </label>
+    </div>
+    <button onclick="uploadBookToGithub()" id="uploadBtn">Отправить на сервер</button>
+    <div id="uploadStatus" style="display:none;"></div>
+</div>
 
         <!-- Контролы поиска и фильтрации -->
         <div class="controls">
