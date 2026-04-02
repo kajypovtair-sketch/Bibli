@@ -78,6 +78,17 @@
     },
     {
         "id": 8,
+        "title": "Женское международное движение: Сборник статей",
+        "author": "Various",
+        "genre": "Classic",
+        "year": 2024,
+        "rating": 5.0,
+        "link": "books/pg37196-images.epub",
+        "image": "img/covers/pg37196-images.epub.jpg",
+        "description": "Автоматически добавленная книга."
+    },
+    {
+        "id": 9,
         "title": "Dark power",
         "author": "Elisabeth Sanxay Holding",
         "genre": "Classic",
@@ -88,7 +99,7 @@
         "description": "Автоматически добавленная книга."
     },
     {
-        "id": 9,
+        "id": 10,
         "title": "1001 задача для умственного счета",
         "author": "Sergei Aleksandrovich Rachinskii",
         "genre": "Classic",
